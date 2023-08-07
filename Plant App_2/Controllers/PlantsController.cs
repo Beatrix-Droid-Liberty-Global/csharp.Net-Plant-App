@@ -41,6 +41,11 @@ namespace Plant_App_2.Controllers
     //return View();
         }
 
+        public async Task<IActionResult> IdentifyPlant()
+        {
+            return View();
+        }
+
 
 
 
