@@ -1,0 +1,22 @@
+name: push image to docker registry
+on:
+  workflow_run:
+    workflows: ["test-image"]
+    types:
+      - completed
+
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    # if succesful push image to docker
+    - name: login to docker
+      run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}} 
+    
+    - name: push image to the docker registry
+      run: docker push ${{secrets.DOCKER_USERNAME}}/asp.net-plant-web-app
+      
+    - name: log out of docker
+      run: docker logout
+  

@@ -1,0 +1,53 @@
+name: test-image
+on:
+  workflow_run:
+    workflows: ["docker-image"]
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+        - name: set up python
+          uses: actions/setup-python@v2
+          with:
+            python-version: 3.10.4
+      # update the package list and install a specific version of firefox
+        - name: Installed package list
+          run: apt list --installed
+
+        - name: Remove default firefox
+          run: sudo rm -fr /opt/firefox
+
+        - name: Install firefox 100.0.2
+          run: |
+            echo "downloading firefox 100"
+            wget "http://ftp.mozilla.org/pub/firefox/releases/100.0.2/linux-x86_64/en-US/firefox-100.0.2.tar.bz2"
+            echo "extracting compressed file"
+            sudo tar xjf firefox-*.tar.bz2
+            echo "removing unneeded compressed file"
+            sudo rm *.bz2
+            echo "moving firefox"
+            sudo mv firefox /opt
+            echo "removing any existing firefox in /usr/bin"
+            sudo rm /usr/bin/firefox
+            echo "creating symbolic link"
+            sudo ln -s /opt/firefox/firefox /usr/bin/firefox
+      
+        # install the dependencies to run the selenium test
+        - name: Install all the dependencies
+          uses: py-actions/py-dependency-install@v4
+          with:
+            path: requirements.txt
+            update-pip: "false"
+            update-setuptools: "false"
+            update-wheel: "false"
+
+      # run the test script
+        - name: Run the image testing script
+          run: python testImage.py
+
+
+
+
