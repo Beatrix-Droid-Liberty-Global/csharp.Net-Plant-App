@@ -1,18 +1,24 @@
-name: Docker Image CI
 
+name: build and push docker image to docker hub
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
 jobs:
-
-  build:
-
+  build-and-push-image:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag asp.net-plant-web-app
+      run: docker build . --file Dockerfile --tag {{secrets.DOCKER_USERNAME}}/asp.net-plant-web-app
+    
+    - name: login to docker
+      run: docker login -u {{secrets.DOCKER_USERNAME}} -p {{secrets.DOCKER_PASSWORD}} 
+    
+    - name: push image to the docker registry
+      run: docker push {{secrets.DOCKER_USERNAME}}/asp.net-plant-web-app
+      
+    - name: log out of docker
+      run: docker logout
+  
