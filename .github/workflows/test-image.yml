@@ -44,6 +44,11 @@ jobs:
             update-setuptools: "false"
             update-wheel: "false"
 
+
+      # run the docker image
+        - name: run the docker image
+          run: docker run -d -p 81:80 ${{secrets.DOCKER_USERNAME}}/asp.net-plant-web-app
+      
       # run the test script
         - name: Run the image testing script
           run: python testImage.py
